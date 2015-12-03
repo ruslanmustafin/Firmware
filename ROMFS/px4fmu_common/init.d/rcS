@@ -217,7 +217,12 @@ then
 	#
 	if param compare SYS_USE_IO 1
 	then
-		set USE_IO yes
+		if ver hwcmp PX4FMU_V4
+		then
+			set USE_IO no
+		else
+			set USE_IO yes
+		fi
 	else
 		set USE_IO no
 	fi
@@ -391,6 +396,14 @@ then
 	#
 	set TTYS1_BUSY no
 
+	#
+	# Check if UAVCAN is enabled, default to it for ESCs
+	#
+	if param greater UAVCAN_ENABLE 2
+	then
+		set OUTPUT_MODE uavcan_esc
+	fi
+
 	# If OUTPUT_MODE == none then something is wrong with setup and we shouldn't try to enable output
 	if [ $OUTPUT_MODE != none ]
 	then
@@ -529,8 +542,12 @@ then
 			# Exit from nsh to free port for mavlink
 			set EXIT_ON_END yes
 		else
-			# Start MAVLink on default port: ttyS1
 			set MAVLINK_F "-r 1200"
+			# Avoid using ttyS1 for MAVLink on FMUv4
+			if ver hwcmp PX4FMU_V4
+			then
+				set MAVLINK_F "-r 1200 -d /dev/ttyS2"
+			fi
 		fi
 	fi
 
@@ -555,6 +572,10 @@ then
 		if param compare SYS_COMPANION 157600
 		then
 			mavlink start -d /dev/ttyS2 -b 57600 -m osd -r 1000
+		fi
+		if param compare SYS_COMPANION 257600
+		then
+			mavlink start -d /dev/ttyS2 -b 57600 -m magic -r 5000 -x
 		fi
 		# Sensors on the PWM interface bank
 		# clear pins 5 and 6

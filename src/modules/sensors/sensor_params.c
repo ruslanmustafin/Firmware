@@ -41,9 +41,6 @@
  * @author Thomas Gubler <thomas@px4.io>
  */
 
-#include <px4_config.h>
-#include <systemlib/param/param.h>
-
 /**
  * ID of the board this parameter set was calibrated on.
  *
@@ -1805,7 +1802,6 @@ PARAM_DEFINE_FLOAT(RC18_REV, 1.0f);
  */
 PARAM_DEFINE_FLOAT(RC18_DZ, 0.0f);
 
-#ifdef CONFIG_ARCH_BOARD_PX4FMU_V1
 /**
  * Enable relay control of relay 1 mapped to the Spektrum receiver power supply
  *
@@ -1814,7 +1810,6 @@ PARAM_DEFINE_FLOAT(RC18_DZ, 0.0f);
  * @group Radio Calibration
  */
 PARAM_DEFINE_INT32(RC_RL1_DSM_VCC, 0); /* Relay 1 controls DSM VCC */
-#endif
 
 /**
  * DSM binding trigger.
@@ -1968,6 +1963,15 @@ PARAM_DEFINE_INT32(RC_MAP_MODE_SW, 0);
  * @group Radio Switches
  */
 PARAM_DEFINE_INT32(RC_MAP_RETURN_SW, 0);
+
+/**
+ * Rattitude switch channel mapping.
+ *
+ * @min 0
+ * @max 18
+ * @group Radio Switches
+ */
+PARAM_DEFINE_INT32(RC_MAP_RATT_SW, 0);
 
 /**
  * Posctl switch channel mapping.
@@ -2131,6 +2135,23 @@ PARAM_DEFINE_FLOAT(RC_ASSIST_TH, 0.25f);
  *
  */
 PARAM_DEFINE_FLOAT(RC_AUTO_TH, 0.75f);
+
+/**
+ * Threshold for selecting rattitude mode
+ *
+ * 0-1 indicate where in the full channel range the threshold sits
+ * 		0 : min
+ * 		1 : max
+ * sign indicates polarity of comparison
+ * 		positive : true when channel>th
+ * 		negative : true when channel<th
+ *
+ * @min -1
+ * @max 1
+ * @group Radio Switches
+ *
+ */
+PARAM_DEFINE_FLOAT(RC_RATT_TH, 0.5f);
 
 /**
  * Threshold for selecting posctl mode
